@@ -1,0 +1,285 @@
+﻿<Window x:Class="LosungenWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:LosungenWpf.View"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:losungen="clr-namespace:Losungen;assembly=Losungen"
+        xmlns:viewModel="clr-namespace:LosungenWpf.ViewModel"
+        
+        mc:Ignorable="d"
+        Title="Losungen" Height="800" Width="600"
+        >
+    <Window.Resources>
+        <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#FF293955" />
+        <SolidColorBrush x:Key="SelectedBorderBrush" Color="#465A7D" />
+        <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#FFF" />
+
+        <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#FFF" />
+        <SolidColorBrush x:Key="DefaultBorderBrush" Color="#FF293955" />
+        <SolidColorBrush x:Key="DefaultForegroundBrush" Color="#FF293955" />
+
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource DefaultForegroundBrush}" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="{StaticResource DefaultForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}" x:Key="TextBoxLarge">
+            <Setter Property="Foreground" Value="{StaticResource SelectedForegroundBrush}" />
+            <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,10,0,10" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="IsReadOnly" Value="True" />
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxLarge}" x:Key="TextBoxThin">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+
+        </Style>
+
+        <Style TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="TextElement.Foreground" Value="{StaticResource DefaultForegroundBrush}" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                TextElement.Foreground="{TemplateBinding TextElement.Foreground}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource SelectedBorderBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource SelectedForegroundBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource SelectedBorderBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource SelectedBorderBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="ItemsContainerStyle">
+            <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <Setter Property="TextElement.Foreground" Value="{StaticResource DefaultForegroundBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,1,0,0" 
+                    Background="{TemplateBinding Background}"
+                    x:Name="Border">
+                            <ContentPresenter Margin="5" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource SelectedBorderBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource SelectedForegroundBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+        </Style>
+        <Style TargetType="Thumb">
+            <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+        </Style>
+
+
+        <Style TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Rectangle x:Name="Corner" Grid.Column="0" Fill="{StaticResource DefaultBorderBrush}" Grid.Row="1"/>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate DataType="{x:Type losungen:LosungsItem}">
+            <Border BorderBrush="{StaticResource SelectedBorderBrush}" BorderThickness="1" 
+                    Background="{StaticResource SelectedBackgroundBrush}"
+                    TextElement.Foreground="{StaticResource SelectedForegroundBrush}">
+                <StackPanel Margin="5">
+                    <TextBlock Text="{Binding Day, StringFormat='{}{0:dddd - dd. MMMM yyyy}'}" Language="de" FontSize="14" FontWeight="Light" />
+                    <TextBox Text="{Binding Sonntag, Mode=OneWay}" Style="{StaticResource TextBoxLarge}" x:Name="SonntagBox" />
+                    <TextBox Text="{Binding Losungstext, Mode=OneWay}" Style="{StaticResource TextBoxLarge}" />
+                    <TextBox Text="{Binding Losungsvers, Mode=OneWay}" Style="{StaticResource TextBoxThin}"  />
+                    <TextBox Text="{Binding Lehrtext, Mode=OneWay}"  Style="{StaticResource TextBoxLarge}" />
+                    <TextBox Text="{Binding Lehrtextvers, Mode=OneWay}"  Style="{StaticResource TextBoxThin}" SnapsToDevicePixels="True">
+                        <!--<TextBox.LayoutTransform>
+                            <RotateTransform Angle="-70" />
+                        </TextBox.LayoutTransform>-->
+                    </TextBox>
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Sonntag}" Value="{x:Null}">
+                    <Setter TargetName="SonntagBox" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type losungen:LosungsItem}" x:Key="DataTemplate">
+            <StackPanel SnapsToDevicePixels="True">
+                <TextBlock Text="{Binding Day, StringFormat='{}{0:dd. MM. yyyy - dddd}'}" Language="de" FontSize="14" />
+                <TextBlock Text="{Binding Losungstext}" FontSize="11" FontWeight="Light" TextWrapping="Wrap" SnapsToDevicePixels="True" />
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="White" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="Background" Value="Orange" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Grid Margin="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Filter:"/>
+            <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding FilteredElements, StringFormat={}{0} Losungen}"
+                       HorizontalAlignment="Right"/>
+            <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,2">
+                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged, Delay=350}"
+                 FontSize="14" Padding="2" 
+                 Foreground="{StaticResource DefaultForegroundBrush}"
+                 IsEnabled="{Binding ElementName=DownloadButton, Path=IsEnabled}"/>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <ListBox ItemsSource="{Binding View}" x:Name="ListBox" SelectedItem="{Binding SelectedLosung}" 
+                     IsSynchronizedWithCurrentItem="True" 
+                     BorderThickness="0,0,0,0" BorderBrush="{StaticResource SelectedBackgroundBrush}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ItemContainerStyle="{StaticResource ItemsContainerStyle}" 
+                     ItemTemplate="{StaticResource DataTemplate}"
+                     Grid.Column="0" Grid.RowSpan="2">
+
+                <i:Interaction.Behaviors>
+                    <view:ScrollIntoViewListBoxBehavior />
+                </i:Interaction.Behaviors>
+
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" 
+                          Width="5" HorizontalAlignment="Stretch" />
+            <ContentControl Content="{Binding SelectedLosung}" Grid.Column="2" Grid.Row="0" />
+
+            <Grid  Grid.Column="2" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding PrevSundayCommand}" 
+                        x:Name="PrevButton"
+                        MinWidth="33" ToolTip="Vorheriger Sonntag">
+                    <Path Fill="{Binding ElementName=PrevButton, Path=Foreground}" Data="M -2 6 L 4 12 L 4 0 Z"/>
+                </Button>
+                <Button Grid.Column="1" Command="{Binding ClipboardCommand}">In Zwischenablage kopieren</Button>
+                <Button Grid.Column="2" Command="{Binding NextSundayCommand}"
+                        x:Name="NextButton"
+                        MinWidth="33" ToolTip="Nächster Sonntag">
+                    <Path Fill="{Binding ElementName=NextButton, Path=Foreground}" Data="M 2 12 L 9 6 L 2 0 Z"/>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Button Command="{Binding FillCommand}" x:Name="DownloadButton"  Visibility="{Binding ElementName=ListBox, Path=HasItems, Converter={StaticResource BoolToVis}, ConverterParameter='n'}"
+                Grid.Row="2" Grid.Column="0">Download</Button>
+        <Button Command="{Binding CancellationCommand}" x:Name="CancelButton" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
+                Grid.Row="2" Grid.Column="0">Abbrechen</Button>
+
+        <TextBlock Text="{Binding StateText}" FontSize="10" HorizontalAlignment="Right" FontWeight="Light"
+                   Grid.Row="3" Grid.Column="0" />
+    </Grid>
+</Window>
