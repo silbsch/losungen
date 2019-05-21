@@ -274,7 +274,7 @@
             </Grid>
         </Grid>
 
-        <Button Command="{Binding FillCommand}" x:Name="DownloadButton"  Visibility="{Binding ElementName=ListBox, Path=HasItems, Converter={StaticResource BoolToVis}, ConverterParameter='n'}"
+        <Button Command="{Binding FillCommand}" x:Name="DownloadButton"  Visibility="Visible"
                 Grid.Row="2" Grid.Column="0">Download</Button>
         <Button Command="{Binding CancellationCommand}" x:Name="CancelButton" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
                 Grid.Row="2" Grid.Column="0">Abbrechen</Button>
