@@ -21,22 +21,19 @@ namespace LosungenWpf.ViewModel
     {
         private readonly object _lock = new object();
 
-        //private readonly Losungen _losungen;
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly Dictionary<int, Losungen> _losungen;
+        private readonly LosungCollection _losungen;
 
         public MainViewModel()
         {
-            _losungen = new Dictionary<int, Losungen>();
-            Items = new ObservableCollection<LosungsItem>();
-            BindingOperations.EnableCollectionSynchronization(Items, _lock);
+            _losungen = new LosungCollection();
+            BindingOperations.EnableCollectionSynchronization(_losungen.Items, _lock);
         }
 
-        public ObservableCollection<LosungsItem> Items { get; }
 
-        public ICommand FillCommand => new DelegateCommand(
-            async () => { await InitialLosungAsync(DateTime.Now.Year); }, 
-            () => !IsBusy).ObservesProperty(() => IsBusy);
+        //public ICommand FillCommand => new DelegateCommand(
+        //    async () => { await InitialLosungAsync(DateTime.Now.Year); }, 
+        //    () => !IsBusy).ObservesProperty(() => IsBusy);
 
 
         public ICommand CancellationCommand => new DelegateCommand(() =>
@@ -69,10 +66,11 @@ namespace LosungenWpf.ViewModel
         }, () => SelectedLosung != null
             ).ObservesProperty(() => SelectedLosung);
 
-        public ICommand NextSundayCommand => new DelegateCommand(async() => await OnSundayExecute(true),
+        public ICommand NextSundayCommand => new DelegateCommand(async() => await MoveTo(_losungen.NextSunday),
             () => !IsBusy).ObservesProperty(() => IsBusy);
 
-        public ICommand PrevSundayCommand => new DelegateCommand(async() => await OnSundayExecute(false));
+        public ICommand PrevSundayCommand => new DelegateCommand(async() => await MoveTo(_losungen.PrevSunday),
+            () => !IsBusy).ObservesProperty(() => IsBusy);
 
         private bool _isBusy;
 
@@ -128,12 +126,28 @@ namespace LosungenWpf.ViewModel
         {
             Task.Run(async () =>
                 {
-                    await InitialLosungAsync(DateTime.Now.Year);
-                    SelectedLosung = Items.FirstOrDefault(l => l.Day.Date == DateTime.Today);
+                    try
+                    {
+                        IsBusy = true;
+                        using (_cancellationTokenSource = new CancellationTokenSource())
+                        {
+                            await _losungen.InitialiseAsync(_cancellationTokenSource.Token, GetProgress());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        StateText = ex.Message;
+                    }
+                    finally
+                    {
+                        _cancellationTokenSource = null;
+                        IsBusy = false;
+                    }
+                    SelectedLosung = _losungen.Today;
                 }
             );
 
-            var v = CollectionViewSource.GetDefaultView(Items);
+            var v = CollectionViewSource.GetDefaultView(_losungen.Items);
 
             using (v.DeferRefresh())
             {
@@ -143,42 +157,6 @@ namespace LosungenWpf.ViewModel
             }
             v.MoveCurrentTo(SelectedLosung);
             return v;
-        }
-
-        private async Task InitialLosungAsync(int year)
-        {
-            IsBusy = true;
-            if(!_losungen.TryGetValue(year, out var losung))
-            {
-                 losung = new Losungen(year);
-                 _losungen[year] = losung;
-            }
-
-            if (!losung.IsInitialzed)
-            {
-                try
-                {
-                    using (_cancellationTokenSource = new CancellationTokenSource())
-                    {
-                        var p = new Progress<DownloadProgressChangedEventArgs>(args =>
-                        {
-                            StateText = $"{args.ProgressPercentage}% | {args.BytesReceived}/{args.TotalBytesToReceive}";
-                        });
-
-                        var items = await losung.InitializeAsync(_cancellationTokenSource.Token, p);
-                        Items.AddRange(items);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    StateText = ex.Message;
-                }
-                finally
-                {
-                    _cancellationTokenSource = null;
-                }
-            }
-            IsBusy = false;
         }
 
         private bool Filter(object item)
@@ -230,35 +208,33 @@ namespace LosungenWpf.ViewModel
         {
             return String.Join($";{Environment.NewLine}", raw.Split(new []{"; "},StringSplitOptions.RemoveEmptyEntries));
         }
-
-        private async Task OnSundayExecute(bool nextSunday)
+        
+        private async Task MoveTo(Func<LosungsItem, CancellationToken , Progress<DownloadProgressChangedEventArgs>, Task<LosungsItem>>  func)
         {
-            try
+            if (func != null)
             {
-                var date = SelectedLosung?.Day ?? DateTime.Today;
-
-                var sunday = nextSunday
-                    ? date.AddDays(7 - (int) date.DayOfWeek) 
-                    : date.AddDays(date.DayOfWeek==DayOfWeek.Sunday
-                                   ? -7
-                                   : -(int)date.DayOfWeek);
-
-                var sundayItem = Items.FirstOrDefault(i => i.Day == sunday);
-
-                if (sundayItem != null)
+                IsBusy = true;
+                try
                 {
-                    View.MoveCurrentTo(sundayItem);
+                    using(_cancellationTokenSource=new CancellationTokenSource())
+                    {
+                        var to= await func(SelectedLosung, _cancellationTokenSource.Token, GetProgress());
+                        if (to != null)
+                        {
+                            View.MoveCurrentTo(to);
+                        }
+                    }
                 }
-                else if(!_losungen.ContainsKey(sunday.Year))
+                finally
                 {
-                    await InitialLosungAsync(sunday.Year);
-                    await OnSundayExecute(nextSunday);
+                    IsBusy = false;
                 }
-            }
-            catch
-            {
-                StateText = "Konnte Losung nicht in Zwischenablage kopieren!";
             }
         }
+        private Progress<DownloadProgressChangedEventArgs> GetProgress()
+            => new Progress<DownloadProgressChangedEventArgs>(args =>
+        {
+            StateText = $"{args.ProgressPercentage}% | {args.BytesReceived}/{args.TotalBytesToReceive}";
+        });
     }
 }

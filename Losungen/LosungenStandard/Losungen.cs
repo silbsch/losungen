@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -14,7 +13,6 @@ namespace LosungenStandard
     {
         private readonly string _fileName;
         private readonly string _localFileName;
-        private bool _isInitialized;
 
         public Losungen(int year)
         {
@@ -23,20 +21,18 @@ namespace LosungenStandard
             _localFileName = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 _fileName);
-
-            //Initialize(new FileInfo(_localFileName), CancellationToken.None);
         }
 
         private readonly List<LosungsItem> _losungsItems;
         public IEnumerable<LosungsItem> Items => _losungsItems;
 
-        public bool IsInitialzed => _isInitialized;
+        public bool IsInitialzed { get; private set; }
 
         public Task<IEnumerable<LosungsItem>> InitializeAsync(CancellationToken cancellationToken,
             IProgress<DownloadProgressChangedEventArgs> progress)
         {
 
-            return _isInitialized
+            return IsInitialzed
                 ? Task.FromResult(Items)
                 : Task.Run(async () =>
                 {
@@ -99,12 +95,12 @@ namespace LosungenStandard
 
         private void Initialize(FileInfo zipFile, CancellationToken cancellationToken)
         {
-            if (_isInitialized || !(zipFile?.Exists ?? false) || cancellationToken.IsCancellationRequested)
+            if (IsInitialzed || !(zipFile?.Exists ?? false) || cancellationToken.IsCancellationRequested)
             {
                 return;
             }
             
-            _isInitialized = true;
+            IsInitialzed = true;
 
             var xml = UnZipLosungen(zipFile);
             _losungsItems.Clear();
