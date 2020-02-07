@@ -2,12 +2,185 @@
     x:Class="LosungenUwp.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:LosungenUwp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:losungenUwp="using:LosungenUwp"
+    xmlns:converter="using:LosungenUwp.Converter"
     mc:Ignorable="d">
+    <Page.Resources>
+        <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#FF293955" />
+        <SolidColorBrush x:Key="SelectedBorderBrush" Color="#465A7D" />
+        <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#FFF" />
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#FFF" />
+        <SolidColorBrush x:Key="DefaultBorderBrush" Color="#FF293955" />
+        <SolidColorBrush x:Key="DefaultForegroundBrush" Color="#FF293955" />
 
+        <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+
+        <Style TargetType="ListViewItem" x:Key="ItemsContainerStyle">
+            <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+            <!--
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,1,0,0" 
+                            Background="{TemplateBinding Background}"
+                            x:Name="Border">
+                            <ContentPresenter Margin="5" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            -->
+        </Style>
+
+
+        <Style TargetType="TextBox" x:Key="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource DefaultForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBox}" x:Key="TextBoxLarge">
+            <Setter Property="Foreground" Value="{StaticResource SelectedForegroundBrush}" />
+            <Setter Property="Background" Value="{StaticResource SelectedBackgroundBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,10,0,10" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="IsReadOnly" Value="True" />
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxLarge}" x:Key="TextBoxThin">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <DataTemplate x:DataType="losungenUwp:LosungsItem" x:Key="DataTemplateMain">
+            <Border BorderBrush="{StaticResource SelectedBorderBrush}" BorderThickness="1" 
+                    Background="{StaticResource SelectedBackgroundBrush}"
+                    HorizontalAlignment="Stretch" Margin="0">
+                <StackPanel Margin="5">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource SelectedForegroundBrush}" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Text="{Binding DisplayDay}" Language="de" FontSize="14" FontWeight="Light" />
+                    <TextBox Text="{Binding Sonntag, Mode=OneWay}" Style="{StaticResource TextBoxLarge}" Visibility="{x:Bind Sonntag, Converter={StaticResource NullToVisibilityConverter}}" />
+                    <TextBox Text="{Binding Losungstext, Mode=OneWay}" Style="{StaticResource TextBoxLarge}" />
+                    <TextBox Text="{Binding Losungsvers, Mode=OneWay}" Style="{StaticResource TextBoxThin}"  />
+                    <TextBox Text="{Binding Lehrtextvers, Mode=OneWay}"  Style="{StaticResource TextBoxThin}" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+
+        <DataTemplate x:DataType="losungenUwp:LosungsItem" x:Key="DataTemplateList">
+            <StackPanel>
+                <TextBlock Text="{Binding DisplayDay}" Language="de" FontSize="14" />
+                <TextBlock Text="{Binding Losungstext}" FontSize="11" FontWeight="Light" TextWrapping="Wrap" />
+            </StackPanel>
+        </DataTemplate>
+
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Filter:"/>
+            <TextBlock Grid.Column="1" Grid.Row="0"
+                       HorizontalAlignment="Right">
+                <Run  Text="{Binding FilteredElements}" />
+                <Run  Text=" Losungen"/>
+            </TextBlock>
+            <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,2">
+                <TextBox Text="{Binding MainViewModel.FilterText,Mode=TwoWay}"
+                         FontSize="14" Padding="2" 
+                         Foreground="{StaticResource DefaultForegroundBrush}"
+                         IsEnabled="{Binding ElementName=DownloadButton, Path=IsEnabled}"/>
+            </Border>
+        </Grid>
+        <SplitView 
+               Grid.Row="1"
+               DisplayMode="Inline"
+               CompactPaneLength="48"
+               OpenPaneLength="256"
+               IsTabStop="False" IsPaneOpen="True">
+        <SplitView.Pane>
+                <ListView ItemsSource="{Binding LosungItems}" 
+                      SelectedItem="{Binding SelectedLosung, Mode=TwoWay}" SelectionMode="Single"
+                      IsItemClickEnabled="True"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ItemTemplate="{StaticResource DataTemplateList}"
+                      ItemContainerStyle="{StaticResource ItemsContainerStyle}" 
+                     >
+                <!--
+                ItemContainerStyle="{StaticResource ItemsContainerStyle}" 
+                     
+                    <i:Interaction.Behaviors>
+                        <local:ScrollIntoViewForListBox />
+                    </i:Interaction.Behaviors>
+-->
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel 
+                                VerticalAlignment="Top"
+                                ItemsUpdatingScrollMode="KeepScrollOffset"
+                            />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+        </SplitView.Pane>
+        <SplitView.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                    <ContentControl Content="{Binding SelectedLosung}" Grid.Row="0" 
+                                    ContentTemplate="{StaticResource DataTemplateMain}" Foreground="#FFBADED1" Background="BlueViolet" 
+                                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Command="{Binding PrevSundayCommand}" 
+                            x:Name="PrevButton"
+                            MinWidth="33">
+                        <Path Fill="{Binding ElementName=PrevButton, Path=Foreground}" Data="M -2 6 L 4 12 L 4 0 Z"/>
+                    </Button>
+                    <Button Grid.Column="1" Margin="5,2" HorizontalAlignment="Stretch">In Zwischenablage kopieren</Button>
+                    <Button Grid.Column="2" Command="{Binding NextSundayCommand}"
+                            x:Name="NextButton"
+                            MinWidth="33">
+                        <Path Fill="{Binding ElementName=NextButton, Path=Foreground}" Data="M 2 12 L 9 6 L 2 0 Z"/>
+                    </Button>
+                </Grid>
+                </Grid>
+        </SplitView.Content>
+    </SplitView>
     </Grid>
 </Page>
+

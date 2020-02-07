@@ -7,11 +7,11 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="cd85d455-6a67-4304-85ad-1408562874a7"
+    Name="225f6f61-e89a-4ec8-b469-0db5b1d25d71"
     Publisher="CN=blume"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="cd85d455-6a67-4304-85ad-1408562874a7" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="225f6f61-e89a-4ec8-b469-0db5b1d25d71" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>LosungenUwp</DisplayName>

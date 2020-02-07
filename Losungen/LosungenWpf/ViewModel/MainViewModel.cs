@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using Losungen;
+using LosungenStandard;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -18,36 +21,22 @@ namespace LosungenWpf.ViewModel
     {
         private readonly object _lock = new object();
 
-        private readonly Losungen.Losungen _losungen;
+        //private readonly Losungen _losungen;
         private CancellationTokenSource _cancellationTokenSource;
+        private readonly Dictionary<int, Losungen> _losungen;
+
         public MainViewModel()
         {
-            _losungen=new Losungen.Losungen(DateTime.Today.Year);
-            BindingOperations.EnableCollectionSynchronization(_losungen.Items, _lock);
-            SelectedLosung = _losungen.Items.FirstOrDefault(l => l.Day.Date == DateTime.Today);
+            _losungen = new Dictionary<int, Losungen>();
+            Items = new ObservableCollection<LosungsItem>();
+            BindingOperations.EnableCollectionSynchronization(Items, _lock);
         }
 
-        public ICommand FillCommand => new DelegateCommand(async () =>
-        {
-            IsBusy = true;
-            try
-            {
-                _cancellationTokenSource=new CancellationTokenSource();
-                var p=new Progress<DownloadProgressChangedEventArgs>(args =>
-                {
-                    StateText = $"{args.ProgressPercentage}% | {args.BytesReceived}/{args.TotalBytesToReceive}";
-                });
-                
-                await _losungen.InitializeAsync(_cancellationTokenSource.Token, p);
-            }
-            finally
-            {
-                IsBusy = false;
-                _cancellationTokenSource.Dispose();
-                _cancellationTokenSource = null;
-            }
+        public ObservableCollection<LosungsItem> Items { get; }
 
-        }, () => !IsBusy).ObservesProperty(() => IsBusy);
+        public ICommand FillCommand => new DelegateCommand(
+            async () => { await InitialLosungAsync(DateTime.Now.Year); }, 
+            () => !IsBusy).ObservesProperty(() => IsBusy);
 
 
         public ICommand CancellationCommand => new DelegateCommand(() =>
@@ -80,9 +69,10 @@ namespace LosungenWpf.ViewModel
         }, () => SelectedLosung != null
             ).ObservesProperty(() => SelectedLosung);
 
-        public ICommand NextSundayCommand => new DelegateCommand(() => OnSundayExecute(true));
+        public ICommand NextSundayCommand => new DelegateCommand(async() => await OnSundayExecute(true),
+            () => !IsBusy).ObservesProperty(() => IsBusy);
 
-        public ICommand PrevSundayCommand => new DelegateCommand(() => OnSundayExecute(false));
+        public ICommand PrevSundayCommand => new DelegateCommand(async() => await OnSundayExecute(false));
 
         private bool _isBusy;
 
@@ -104,8 +94,7 @@ namespace LosungenWpf.ViewModel
                 SetProperty(ref _filterText, value, () =>
                 {
 
-                    if (string.IsNullOrEmpty(_filterText)
-                        || !View.CanFilter)
+                    if (string.IsNullOrEmpty(_filterText) || !View.CanFilter)
                     {
                         View.Filter = null;
                     }
@@ -137,18 +126,61 @@ namespace LosungenWpf.ViewModel
         }
         private ICollectionView CreateCollectionView()
         {
-            var v = CollectionViewSource.GetDefaultView(_losungen.Items);
+            Task.Run(async () =>
+                {
+                    await InitialLosungAsync(DateTime.Now.Year);
+                    SelectedLosung = Items.FirstOrDefault(l => l.Day.Date == DateTime.Today);
+                }
+            );
+
+            var v = CollectionViewSource.GetDefaultView(Items);
 
             using (v.DeferRefresh())
             {
                 v.SortDescriptions.Clear();
-                SortDescription sd = new SortDescription(nameof(LosungsItem.Day), ListSortDirection.Ascending);
+                var sd = new SortDescription(nameof(LosungsItem.Day), ListSortDirection.Ascending);
                 v.SortDescriptions.Add(sd);
             }
             v.MoveCurrentTo(SelectedLosung);
             return v;
         }
-        
+
+        private async Task InitialLosungAsync(int year)
+        {
+            IsBusy = true;
+            if(!_losungen.TryGetValue(year, out var losung))
+            {
+                 losung = new Losungen(year);
+                 _losungen[year] = losung;
+            }
+
+            if (!losung.IsInitialzed)
+            {
+                try
+                {
+                    using (_cancellationTokenSource = new CancellationTokenSource())
+                    {
+                        var p = new Progress<DownloadProgressChangedEventArgs>(args =>
+                        {
+                            StateText = $"{args.ProgressPercentage}% | {args.BytesReceived}/{args.TotalBytesToReceive}";
+                        });
+
+                        var items = await losung.InitializeAsync(_cancellationTokenSource.Token, p);
+                        Items.AddRange(items);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StateText = ex.Message;
+                }
+                finally
+                {
+                    _cancellationTokenSource = null;
+                }
+            }
+            IsBusy = false;
+        }
+
         private bool Filter(object item)
         {
             if (!string.IsNullOrEmpty(FilterText) && item is LosungsItem losung)
@@ -199,27 +231,29 @@ namespace LosungenWpf.ViewModel
             return String.Join($";{Environment.NewLine}", raw.Split(new []{"; "},StringSplitOptions.RemoveEmptyEntries));
         }
 
-        private void OnSundayExecute(bool nextSunday)
+        private async Task OnSundayExecute(bool nextSunday)
         {
             try
             {
                 var date = SelectedLosung?.Day ?? DateTime.Today;
-             
-                var sunday =
-                    nextSunday
-                        ? View.Cast<LosungsItem>()
-                            .Where(i => i.Day.DayOfWeek == DayOfWeek.Sunday && i.Day > date)
-                            .OrderBy(i => i.Day)
-                            .FirstOrDefault()
-                        : View.Cast<LosungsItem>()
-                            .Where(i => i.Day.DayOfWeek == DayOfWeek.Sunday && i.Day < date)
-                            .OrderBy(i => i.Day)
-                            .LastOrDefault();
 
-                
+                var sunday = nextSunday
+                    ? date.AddDays(7 - (int) date.DayOfWeek) 
+                    : date.AddDays(date.DayOfWeek==DayOfWeek.Sunday
+                                   ? -7
+                                   : -(int)date.DayOfWeek);
 
-                if (sunday != null)
-                { View.MoveCurrentTo(sunday);}
+                var sundayItem = Items.FirstOrDefault(i => i.Day == sunday);
+
+                if (sundayItem != null)
+                {
+                    View.MoveCurrentTo(sundayItem);
+                }
+                else if(!_losungen.ContainsKey(sunday.Year))
+                {
+                    await InitialLosungAsync(sunday.Year);
+                    await OnSundayExecute(nextSunday);
+                }
             }
             catch
             {

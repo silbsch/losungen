@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:view="clr-namespace:LosungenWpf.View"
+        xmlns:local="clr-namespace:LosungenWpf"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:losungen="clr-namespace:Losungen;assembly=Losungen"
+        xmlns:losungenStandard="clr-namespace:LosungenStandard;assembly=LosungenStandard"
         xmlns:viewModel="clr-namespace:LosungenWpf.ViewModel"
         
         mc:Ignorable="d"
@@ -152,7 +152,7 @@
             </Setter>
         </Style>
 
-        <DataTemplate DataType="{x:Type losungen:LosungsItem}">
+        <DataTemplate DataType="{x:Type losungenStandard:LosungsItem}">
             <Border BorderBrush="{StaticResource SelectedBorderBrush}" BorderThickness="1" 
                     Background="{StaticResource SelectedBackgroundBrush}"
                     TextElement.Foreground="{StaticResource SelectedForegroundBrush}">
@@ -176,7 +176,7 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type losungen:LosungsItem}" x:Key="DataTemplate">
+        <DataTemplate DataType="{x:Type losungenStandard:LosungsItem}" x:Key="DataTemplate">
             <StackPanel SnapsToDevicePixels="True">
                 <TextBlock Text="{Binding Day, StringFormat='{}{0:dd. MM. yyyy - dddd}'}" Language="de" FontSize="14" />
                 <TextBlock Text="{Binding Losungstext}" FontSize="11" FontWeight="Light" TextWrapping="Wrap" SnapsToDevicePixels="True" />
@@ -224,7 +224,7 @@
                  Foreground="{StaticResource DefaultForegroundBrush}"
                  IsEnabled="{Binding ElementName=DownloadButton, Path=IsEnabled}"/>
             </Border>
-        </Grid>
+            </Grid>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -245,7 +245,7 @@
                      Grid.Column="0" Grid.RowSpan="2">
 
                 <i:Interaction.Behaviors>
-                    <view:ScrollIntoViewListBoxBehavior />
+                    <local:ScrollIntoViewForListBox />
                 </i:Interaction.Behaviors>
 
             </ListBox>
@@ -261,15 +261,15 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Command="{Binding PrevSundayCommand}" 
-                        x:Name="PrevButton"
+                        x:Name="prevButton"
                         MinWidth="33" ToolTip="Vorheriger Sonntag">
-                    <Path Fill="{Binding ElementName=PrevButton, Path=Foreground}" Data="M -2 6 L 4 12 L 4 0 Z"/>
+                    <Path Fill="{Binding ElementName=prevButton, Path=Foreground}" Data="M -2 6 L 4 12 L 4 0 Z"/>
                 </Button>
                 <Button Grid.Column="1" Command="{Binding ClipboardCommand}">In Zwischenablage kopieren</Button>
                 <Button Grid.Column="2" Command="{Binding NextSundayCommand}"
-                        x:Name="NextButton"
+                        x:Name="nextButton"
                         MinWidth="33" ToolTip="Nächster Sonntag">
-                    <Path Fill="{Binding ElementName=NextButton, Path=Foreground}" Data="M 2 12 L 9 6 L 2 0 Z"/>
+                    <Path Fill="{Binding ElementName=nextButton, Path=Foreground}" Data="M 2 12 L 9 6 L 2 0 Z"/>
                 </Button>
             </Grid>
         </Grid>
