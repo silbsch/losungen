@@ -143,7 +143,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LosungenStandard\LosungenStandard.csproj">
+    <ProjectReference Include="..\Losungen.Standard\Losungen.Standard.csproj">
       <Project>{3ef6ab04-36f8-4503-88ef-3974f7cd7d14}</Project>
       <Name>LosungenStandard</Name>
     </ProjectReference>
