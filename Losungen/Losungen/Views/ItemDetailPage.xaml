@@ -5,14 +5,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Losungen.Views.ItemDetailPage"
-             Title="{Binding Title}">
+             Title="{Binding Day, StringFormat='{0:D}'}">
 
     <StackLayout Spacing="20" Padding="15">
-        <Label Text="Text:" FontSize="Medium" />
+        <Label Text="Losung:" FontSize="Micro" Margin="0,5,0,0" />
         <Label Text="{Binding Losungstext}" FontSize="Medium"/>
-        <Label Text="{Binding Losungsvers}" FontSize="Small"/>
-        <Label Text="Description:" FontSize="Medium" />
-        <Label Text="{Binding Item.Description}" d:Text="Item description" FontSize="Small"/>
-    </StackLayout>
+        <Label Text="{Binding Losungsvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+        <Label Text="Lehrtext:" FontSize="Micro" Margin="0,5,0,0" />
+        <Label Text="{Binding Lehrtext}" FontSize="Medium"/>
+        <Label Text="{Binding Lehrtextvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+
+</StackLayout>
     
 </ContentPage>
