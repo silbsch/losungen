@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 
-namespace LosungenWpf
+namespace Losungen.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

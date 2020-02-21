@@ -1,13 +1,13 @@
-﻿<Window x:Class="LosungenWpf.MainWindow"
+﻿<Window x:Class="Losungen.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LosungenWpf"
+        xmlns:local="clr-namespace:Losungen.Wpf"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:losungenStandard="clr-namespace:LosungenStandard;assembly=LosungenStandard"
-        xmlns:viewModel="clr-namespace:LosungenWpf.ViewModel"
-        
+        xmlns:viewModel="clr-namespace:Losungen.Wpf.ViewModel"
+        xmlns:standard="clr-namespace:Losungen.Standard;assembly=Losungen.Standard"
+
         mc:Ignorable="d"
         Title="Losungen" Height="800" Width="600"
         >
@@ -152,7 +152,7 @@
             </Setter>
         </Style>
 
-        <DataTemplate DataType="{x:Type losungenStandard:LosungsItem}">
+        <DataTemplate DataType="{x:Type standard:LosungItem}">
             <Border BorderBrush="{StaticResource SelectedBorderBrush}" BorderThickness="1" 
                     Background="{StaticResource SelectedBackgroundBrush}"
                     TextElement.Foreground="{StaticResource SelectedForegroundBrush}">
@@ -176,7 +176,7 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type losungenStandard:LosungsItem}" x:Key="DataTemplate">
+        <DataTemplate DataType="{x:Type standard:LosungItem}" x:Key="DataTemplate">
             <StackPanel SnapsToDevicePixels="True">
                 <TextBlock Text="{Binding Day, StringFormat='{}{0:dd. MM. yyyy - dddd}'}" Language="de" FontSize="14" />
                 <TextBlock Text="{Binding Losungstext}" FontSize="11" FontWeight="Light" TextWrapping="Wrap" SnapsToDevicePixels="True" />

@@ -1,17 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿
+using System;
+using Losungen.Wpf.Services;
+using xf=Xamarin.Forms;
 
-namespace LosungenWpf
+namespace Losungen.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App 
     {
+        App()
+        {
+            try
+            {
+                xf.Forms.Init();
+                xf.DependencyService.Register<DataServiceLocator>();
+            }
+            catch (Exception e)
+            {
+
+            }
+            
+        }
     }
 }

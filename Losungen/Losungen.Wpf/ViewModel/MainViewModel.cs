@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using Prism.Commands;
+using Prism.Mvvm;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -11,30 +11,22 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using LosungenStandard;
-using Prism.Commands;
-using Prism.Mvvm;
+using Losungen.Standard;
 
-namespace LosungenWpf.ViewModel
+namespace Losungen.Wpf.ViewModel
 {
     public class MainViewModel : BindableBase
     {
         private readonly object _lock = new object();
 
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly LosungCollection _losungen;
+        private readonly LosungService _losungen;
 
         public MainViewModel()
         {
-            _losungen = new LosungCollection();
+            _losungen = new LosungService();
             BindingOperations.EnableCollectionSynchronization(_losungen.Items, _lock);
         }
-
-
-        //public ICommand FillCommand => new DelegateCommand(
-        //    async () => { await InitialLosungAsync(DateTime.Now.Year); }, 
-        //    () => !IsBusy).ObservesProperty(() => IsBusy);
-
 
         public ICommand CancellationCommand => new DelegateCommand(() =>
         {
@@ -105,11 +97,11 @@ namespace LosungenWpf.ViewModel
             }
         }
 
-        public int FilteredElements => View.Cast<LosungsItem>().Count();
+        public int FilteredElements => View.Cast<LosungItem>().Count();
 
-        private LosungsItem _selectedLosung;
+        private LosungItem _selectedLosung;
 
-        public LosungsItem SelectedLosung
+        public LosungItem SelectedLosung
         {
             get => _selectedLosung;
             set => SetProperty(ref _selectedLosung, value);
@@ -152,7 +144,7 @@ namespace LosungenWpf.ViewModel
             using (v.DeferRefresh())
             {
                 v.SortDescriptions.Clear();
-                var sd = new SortDescription(nameof(LosungsItem.Day), ListSortDirection.Ascending);
+                var sd = new SortDescription(nameof(LosungItem.Day), ListSortDirection.Ascending);
                 v.SortDescriptions.Add(sd);
             }
             v.MoveCurrentTo(SelectedLosung);
@@ -161,7 +153,7 @@ namespace LosungenWpf.ViewModel
 
         private bool Filter(object item)
         {
-            if (!string.IsNullOrEmpty(FilterText) && item is LosungsItem losung)
+            if (!string.IsNullOrEmpty(FilterText) && item is LosungItem losung)
             {
                 try
                 {
@@ -181,7 +173,7 @@ namespace LosungenWpf.ViewModel
             return true;
         }
 
-        private string LosungToClipboard(LosungsItem losung)
+        private string LosungToClipboard(LosungItem losung)
         {
             if (losung == null)
             {
@@ -209,7 +201,7 @@ namespace LosungenWpf.ViewModel
             return String.Join($";{Environment.NewLine}", raw.Split(new []{"; "},StringSplitOptions.RemoveEmptyEntries));
         }
         
-        private async Task MoveTo(Func<LosungsItem, CancellationToken , Progress<DownloadProgressChangedEventArgs>, Task<LosungsItem>>  func)
+        private async Task MoveTo(Func<LosungItem, CancellationToken , Progress<DownloadProgressChangedEventArgs>, Task<LosungItem>>  func)
         {
             if (func != null)
             {
