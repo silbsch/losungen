@@ -7,13 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.Wpf", "Losungen.Wp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Losungen.Standard", "Losungen.Standard\Losungen.Standard.csproj", "{3EF6AB04-36F8-4503-88EF-3974F7CD7D14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.UWP", "Losungen\Losungen.UWP\Losungen.UWP.csproj", "{1748F4E1-C52B-4138-B1D1-1B2A40083469}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.UWP", "Losungen.UWP\Losungen.UWP.csproj", "{1748F4E1-C52B-4138-B1D1-1B2A40083469}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.Android", "Losungen\Losungen.Android\Losungen.Android.csproj", "{7D91255F-9490-42AC-A0D5-6C8111999087}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.Android", "Losungen.Android\Losungen.Android.csproj", "{7D91255F-9490-42AC-A0D5-6C8111999087}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.iOS", "Losungen\Losungen.iOS\Losungen.iOS.csproj", "{0CF870AF-D667-4449-882A-7B66EA3E1E22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Losungen.iOS", "Losungen.iOS\Losungen.iOS.csproj", "{0CF870AF-D667-4449-882A-7B66EA3E1E22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Losungen", "Losungen\Losungen\Losungen.csproj", "{BB7282E4-14A7-45E9-B1C4-44A4BD984699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Losungen", "Losungen\Losungen.csproj", "{BB7282E4-14A7-45E9-B1C4-44A4BD984699}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

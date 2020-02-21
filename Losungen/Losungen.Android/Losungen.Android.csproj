@@ -89,7 +89,7 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Losungen.Standard\Losungen.Standard.csproj">
+    <ProjectReference Include="..\Losungen.Standard\Losungen.Standard.csproj">
       <Project>{3EF6AB04-36F8-4503-88EF-3974F7CD7D14}</Project>
       <Name>Losungen.Standard</Name>
     </ProjectReference>
