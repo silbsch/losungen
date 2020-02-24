@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:standard="clr-namespace:Losungen.Standard;assembly=Losungen.Standard"
+             mc:Ignorable="d"
+             x:Class="Losungen.Views.ItemsCarouselPage"
+             Title="{Binding SelectedItem.Day, StringFormat='{0:D}'}">
+    <ContentPage.Content>
+        <StackLayout>
+            <CarouselView x:Name="CarouselView"
+                          ItemsSource="{Binding Items}" 
+                          CurrentItem="{Binding SelectedItem, Mode=TwoWay}">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type standard:LosungItem}">
+                        <StackLayout Spacing="20" Padding="15">
+                            <Label Text="{Binding Day, StringFormat='{0:D}'}" FontSize="Large" Margin="0,0,0,5" />
+                            <Label Text="Losung:" FontSize="Micro" Margin="0,5,0,0" />
+                            <Label Text="{Binding Losungstext}" FontSize="Medium"/>
+                            <Label Text="{Binding Losungsvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+                            <Label Text="Lehrtext:" FontSize="Micro" Margin="0,5,0,0" />
+                            <Label Text="{Binding Lehrtext}" FontSize="Medium"/>
+                            <Label Text="{Binding Lehrtextvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+                        </StackLayout>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

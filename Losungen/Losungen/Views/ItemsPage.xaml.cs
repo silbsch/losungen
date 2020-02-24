@@ -1,4 +1,6 @@
-﻿using Losungen.Standard;
+﻿using System;
+using System.Linq;
+using Losungen.Standard;
 using Losungen.ViewModels;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -13,7 +15,10 @@ namespace Losungen.Views
     {
         private readonly MainViewModel _viewModel;
         private bool _isAppearing;
-        
+        private bool _isDisappeared;
+
+        private ItemsCarouselPage _itemsCarouselPage;
+
         public ItemsPage()
         {
             InitializeComponent();
@@ -23,11 +28,25 @@ namespace Losungen.Views
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            if (!_isAppearing && (args.SelectedItem is LosungItem item))
+            if (!_isDisappeared && !_isAppearing && args.SelectedItem!=null)
             {
-                await Navigation.PushAsync(new ItemDetailPage(item));
+                if (_itemsCarouselPage == null)
+                {
+                    _itemsCarouselPage = new ItemsCarouselPage
+                    {
+                        BindingContext = _viewModel
+                    };
+                }
+                await Navigation.PushAsync(_itemsCarouselPage);
             }
         }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            _isDisappeared = true;
+        }
+
         protected override async void OnAppearing()
         {
             _isAppearing = true;
@@ -41,14 +60,23 @@ namespace Losungen.Views
             {
                 await task;
 
-                ItemsListView.ScrollTo(
-                    _viewModel.SelectedItem ?? _viewModel.Today,
+                ItemsListView.ScrollTo(_viewModel.SelectedItem ?? _viewModel.Today,
                     ScrollToPosition.MakeVisible, false);
             }
             finally
             {
-                _isAppearing = false;
+                _isAppearing = _isDisappeared= false;
             }
+        }
+
+
+        private void TodayClicked(object sender, EventArgs e)
+        {
+            _isDisappeared = true;
+            _viewModel.SelectedItem = _viewModel.Today;
+            _isDisappeared = false;
+            ItemsListView.ScrollTo(_viewModel.Today,
+                ScrollToPosition.MakeVisible, true);
         }
     }
 }
