@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using Losungen.Standard;
 using Losungen.ViewModels;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -17,27 +15,22 @@ namespace Losungen.Views
         private bool _isAppearing;
         private bool _isDisappeared;
 
-        private ItemsCarouselPage _itemsCarouselPage;
+        private readonly Lazy<ItemsCards> _lazyCards;
 
         public ItemsPage()
         {
             InitializeComponent();
-
-            BindingContext = _viewModel = new MainViewModel();
+            _viewModel = new MainViewModel();
+            _lazyCards = new Lazy<ItemsCards>(() => new ItemsCards(_viewModel) /*new ItemsCarouselPage { BindingContext = _viewModel };*/ );
+            BindingContext = _viewModel;
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             if (!_isDisappeared && !_isAppearing && args.SelectedItem!=null)
             {
-                if (_itemsCarouselPage == null)
-                {
-                    _itemsCarouselPage = new ItemsCarouselPage
-                    {
-                        BindingContext = _viewModel
-                    };
-                }
-                await Navigation.PushAsync(_itemsCarouselPage);
+                await Navigation.PushAsync(_lazyCards.Value);
+                //await Navigation.PushAsync(new ItemsCards(_viewModel));
             }
         }
 
@@ -60,8 +53,7 @@ namespace Losungen.Views
             {
                 await task;
 
-                ItemsListView.ScrollTo(_viewModel.SelectedItem ?? _viewModel.Today,
-                    ScrollToPosition.MakeVisible, false);
+                ItemsListView.ScrollTo(_viewModel.SelectedItem ?? _viewModel.Today, ScrollToPosition.MakeVisible, false);
             }
             finally
             {
@@ -75,8 +67,7 @@ namespace Losungen.Views
             _isDisappeared = true;
             _viewModel.SelectedItem = _viewModel.Today;
             _isDisappeared = false;
-            ItemsListView.ScrollTo(_viewModel.Today,
-                ScrollToPosition.MakeVisible, true);
+            ItemsListView.ScrollTo(_viewModel.Today, ScrollToPosition.MakeVisible, true);
         }
     }
 }

@@ -11,11 +11,7 @@ namespace Losungen.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly ILosungService _losungService;  
-
-        public ReadOnlyObservableCollection<LosungItem> Items { get; }
-
-        public Command LoadItemsCommand { get; set; }
+        private readonly ILosungService _losungService;
 
         public MainViewModel()
         {
@@ -23,6 +19,7 @@ namespace Losungen.ViewModels
             _losungService = DependencyService.Get<ILosungService>();
             Items = _losungService.Items;
             LoadItemsCommand = new Command(async () => await LoadLosungItemsAsync());
+            SelectTodayCommand = new Command(() => SelectedItem = Today);
 
             //MessagingCenter.Subscribe<NewItemPage, Item>(this, "AddItem", async (obj, item) =>
             //{
@@ -31,6 +28,12 @@ namespace Losungen.ViewModels
             //    await DataStore.AddItemAsync(newItem);
             //});
         }
+
+        public ReadOnlyObservableCollection<LosungItem> Items { get; }
+
+        public Command LoadItemsCommand { get; set; }
+
+        public Command SelectTodayCommand { get; set; }
 
         public async Task LoadLosungItemsAsync()
         {

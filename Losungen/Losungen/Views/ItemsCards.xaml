@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:panCardView="clr-namespace:PanCardView;assembly=PanCardView"
+             xmlns:controls="clr-namespace:PanCardView.Controls;assembly=PanCardView"
+             xmlns:processors="clr-namespace:PanCardView.Processors;assembly=PanCardView"
+             xmlns:losungen="clr-namespace:Losungen.Standard;assembly=Losungen.Standard"
+             mc:Ignorable="d"
+             x:Class="Losungen.Views.ItemsCards"
+             Title="{Binding SelectedItem.Day, StringFormat='{0:D}'}" BackgroundColor="White">
+    <ContentPage.Content>
+        <StackLayout>
+            <panCardView:CoverFlowView 
+                PositionShiftValue="145"
+                IsCyclical="false"
+                ItemsSource="{Binding Items}"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                VerticalOptions="FillAndExpand" BackgroundColor="White">
+                <x:Arguments>
+                    <processors:BaseCoverFlowFrontViewProcessor ScaleFactor="0.75" OpacityFactor="0.25" RotationYFactor="0.05" />
+                    <processors:BaseCoverFlowBackViewProcessor  ScaleFactor="0.75" OpacityFactor="0.25" RotationYFactor="-0.05" />
+                </x:Arguments>
+
+                <panCardView:CoverFlowView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type losungen:LosungItem}">
+                        <Frame
+                            Margin="80,5,80,80"
+                            VerticalOptions="Fill"
+                            HorizontalOptions="Fill"
+                            Padding="0" 
+                            HasShadow="false"
+                            IsClippedToBounds="true"
+                            CornerRadius="8"
+                            BackgroundColor="#2296f3"
+                            >
+                            <StackLayout Padding="15">
+                                <Label TextColor="White" Text="{Binding Day, StringFormat='{0:D}'}" FontSize="Large" Margin="0,0,0,5" />
+                                <Label TextColor="White" Text="Losung" FontSize="Micro" Margin="0,5,0,0" HorizontalOptions="Center" />
+                                <Label TextColor="White" Text="{Binding Losungstext}" FontSize="Medium"/>
+                                <Label TextColor="White" Text="{Binding Losungsvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+                                <Label TextColor="White" Text="Lehrtext" FontSize="Micro" Margin="0,5,0,0" HorizontalOptions="Center" />
+                                <Label TextColor="White" Text="{Binding Lehrtext}" FontSize="Medium" HorizontalOptions="Center"/>
+                                <Label TextColor="White" Text="{Binding Lehrtextvers}" FontSize="Small" HorizontalOptions="EndAndExpand"/>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </panCardView:CoverFlowView.ItemTemplate>
+
+                <!--<controls:LeftArrowControl AbsoluteLayout.LayoutBounds="0, 1, -1, -1" />
+                <Button TextColor="Accent" Text="TOday" Command="{Binding SelectTodayCommand}" AbsoluteLayout.LayoutBounds="0, 1, -1, -1" />
+                <controls:RightArrowControl AbsoluteLayout.LayoutBounds="1, 1, -1, -1"/>-->
+
+            </panCardView:CoverFlowView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
