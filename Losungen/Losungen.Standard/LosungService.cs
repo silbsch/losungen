@@ -80,7 +80,13 @@ namespace Losungen.Standard
             if (!losung.IsInitialzed)
             {
                 var items= await losung.GetLosungItemsAsync(cancellationToken, progress);
-                foreach (var item in items) _items.Add(item);
+                var itemsArray = items.ToArray();
+                for (var i = 0; i < itemsArray.Length; i++)
+                {
+                    _items.Insert(i, itemsArray[i]);
+                }
+
+                //foreach (var item in items) _items.Add(item);
             }
         }
 

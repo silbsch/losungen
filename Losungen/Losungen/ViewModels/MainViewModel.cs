@@ -33,7 +33,13 @@ namespace Losungen.ViewModels
 
         public Command LoadItemsCommand { get; set; }
 
-        public Command SelectTodayCommand { get; set; }
+        public Command SelectTodayCommand { get; }
+
+        public Command NextSundayCommand => new Command(async () => SelectedItem = await _losungService.NextSunday(SelectedItem, CancellationToken.None, null),
+            () => !IsBusy);
+
+        public Command PrevSundayCommand => new Command(async () => SelectedItem = await _losungService.PrevSunday(SelectedItem, CancellationToken.None, null),
+            () => !IsBusy);
 
         public async Task LoadLosungItemsAsync()
         {
@@ -64,9 +70,6 @@ namespace Losungen.ViewModels
             get => _selectedItem;
             set => SetProperty(ref _selectedItem, value);
         }
-        public LosungItem Today
-        {
-            get => _losungService.Today;
-        }
+        public LosungItem Today => _losungService.Today;
     }
 }

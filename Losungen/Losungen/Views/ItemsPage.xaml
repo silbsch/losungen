@@ -9,7 +9,7 @@
              Title="{Binding Title}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Today" Clicked="TodayClicked" />
+        <ToolbarItem Text="Today" Command="{Binding SelectTodayCommand}"/>
     </ContentPage.ToolbarItems>
 
     <StackLayout>
@@ -22,9 +22,11 @@
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                 CachingStrategy="RecycleElement"
                 ItemSelected="OnItemSelected"
+                ItemTapped="OnItemTapped"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+            
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="losungen:LosungItem">
+                <DataTemplate x:DataType="{x:Type losungen:LosungItem}">
                     <ViewCell>
                         <StackLayout Padding="10">
                             <Label Text="{Binding Day, StringFormat='{0:D}'}" 
@@ -44,6 +46,16 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Text="P" Grid.Column="0" Command="{Binding PrevSundayCommand}" />
+            <Button Text="Today" Grid.Column="1" Command="{Binding SelectTodayCommand}" />
+        <Button Text="N" Grid.Column="2" Command="{Binding NextSundayCommand}" />
+        </Grid>
     </StackLayout>
-    
 </ContentPage>

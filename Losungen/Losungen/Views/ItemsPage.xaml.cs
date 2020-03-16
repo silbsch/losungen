@@ -25,12 +25,11 @@ namespace Losungen.Views
             BindingContext = _viewModel;
         }
 
-        async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+        void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             if (!_isDisappeared && !_isAppearing && args.SelectedItem!=null)
             {
-                await Navigation.PushAsync(_lazyCards.Value);
-                //await Navigation.PushAsync(new ItemsCards(_viewModel));
+                ItemsListView.ScrollTo(args.SelectedItem, ScrollToPosition.MakeVisible, true);
             }
         }
 
@@ -62,12 +61,13 @@ namespace Losungen.Views
         }
 
 
-        private void TodayClicked(object sender, EventArgs e)
+
+        private async void OnItemTapped(object sender, ItemTappedEventArgs args)
         {
-            _isDisappeared = true;
-            _viewModel.SelectedItem = _viewModel.Today;
-            _isDisappeared = false;
-            ItemsListView.ScrollTo(_viewModel.Today, ScrollToPosition.MakeVisible, true);
+            if (!_isDisappeared && !_isAppearing && args.Item != null)
+            {
+                await Navigation.PushAsync(_lazyCards.Value);
+            }
         }
     }
 }
