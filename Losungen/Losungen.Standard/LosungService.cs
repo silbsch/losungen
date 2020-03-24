@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -10,7 +10,9 @@ namespace Losungen.Standard
 {
     public interface ILosungService
     {
-        ReadOnlyObservableCollection<LosungItem> Items { get; }
+        event EventHandler ItemsChanged;
+
+        IEnumerable<LosungItem> Items { get; }
 
         Task InitialiseAsync(CancellationToken cancellationToken, IProgress<DownloadProgressChangedEventArgs> progress);
 
@@ -27,17 +29,26 @@ namespace Losungen.Standard
 
     public class LosungService: ILosungService
     {
+        public event EventHandler ItemsChanged;
+
         private readonly ConcurrentDictionary<int, Losungen> _losungen;
-        private readonly ObservableCollection<LosungItem> _items;
+        //private readonly ObservableCollection<LosungItem> _items;
         public LosungService()
         {
             _losungen = new ConcurrentDictionary<int, Losungen>();
-            _items = new ObservableCollection<LosungItem>();
-            Items = new ReadOnlyObservableCollection<LosungItem>(_items);
+            //_items = new ObservableCollection<LosungItem>();
+            Items = Enumerable.Empty<LosungItem>();
 
         }
 
-        public ReadOnlyObservableCollection<LosungItem> Items { get;}
+        private IEnumerable<LosungItem> _items;
+        public IEnumerable<LosungItem> Items { get =>_items;
+            private set
+            {
+                _items = value;
+                ItemsChanged?.Invoke(this,EventArgs.Empty);
+            }
+        }
 
         public Task InitialiseAsync(CancellationToken cancellationToken,
             IProgress<DownloadProgressChangedEventArgs> progress)
@@ -77,17 +88,13 @@ namespace Losungen.Standard
                 _losungen.TryAdd(year, losung);
             }
 
-            if (!losung.IsInitialzed)
+            var items = new List<LosungItem>();
+            foreach (var keyValue in _losungen.OrderBy(kv => kv.Key))
             {
-                var items= await losung.GetLosungItemsAsync(cancellationToken, progress);
-                var itemsArray = items.ToArray();
-                for (var i = 0; i < itemsArray.Length; i++)
-                {
-                    _items.Insert(i, itemsArray[i]);
-                }
-
-                //foreach (var item in items) _items.Add(item);
+                items.AddRange(await keyValue.Value.GetLosungItemsAsync(cancellationToken, progress));
             }
+
+            Items = items;
         }
 
         private Task<LosungItem> OnSundayExecute(LosungItem fromThisDay, bool nextSunday,

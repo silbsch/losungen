@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LiteDB;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using LiteDB;
 using Xamarin.Forms;
 
 namespace Losungen.Standard
@@ -35,10 +34,13 @@ namespace Losungen.Standard
                 if (item == null)
                 {
                     var zip = await DownloadFileAsync(year, cancellationToken, progress);
-                    xDocument = UnZipLosungen(zip);
-                    //db.FileStorage.Upload()
-                    collection.Insert(year, new DataStoreItem(year, xDocument));
-                    zip.Delete();
+                    if (zip != null)
+                    {
+                        xDocument = UnZipLosungen(zip);
+                        //db.FileStorage.Upload()
+                        collection.Insert(year, new DataStoreItem(year, xDocument));
+                        zip.Delete();
+                    }
                 }
                 else
                 {
@@ -96,12 +98,10 @@ namespace Losungen.Standard
 
             return null;
         }
-
-
-
+        
         private string GetDataFolder()
         {
-            string path = "";
+            string path;
             try
             {
                 var subFolder = "Losungen";
@@ -109,7 +109,7 @@ namespace Losungen.Standard
                 var folder = DependencyService.Get<IDataServiceLocator>()?.GetDatabaseFolder();
                 if (string.IsNullOrEmpty(folder))
                 {
-                    folder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                    folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 }
 
                 path = Path.Combine(folder, subFolder);

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Linq;
 
 namespace Losungen.Standard
 {
@@ -14,17 +12,11 @@ namespace Losungen.Standard
     {
         private static readonly object LockObject = new object();
 
-        private readonly string _fileName;
-        private readonly string _localFileName;
 
         public Losungen(int year)
         {
             Year = year;
             _losungsItems = new List<LosungItem>();
-            //_fileName = $"Losung_{year}_XML.zip";
-            //_localFileName = Path.Combine(
-            //    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            //    _fileName);
         }
 
         public int Year { get; }
@@ -73,8 +65,11 @@ namespace Losungen.Standard
 
             lock (LockObject)
             {
-                _losungsItems.Clear();
-                _losungsItems.AddRange(xdoc.Descendants("Losungen").Select(xElement => new LosungItem(xElement)));
+                if (xdoc != null)
+                {
+                    _losungsItems.Clear();
+                    _losungsItems.AddRange(xdoc.Descendants("Losungen").Select(xElement => new LosungItem(xElement)));
+                }
 
                 IsInitialzed = true;
             }

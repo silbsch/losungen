@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
@@ -17,6 +18,11 @@ namespace Losungen.ViewModels
         {
             Title = "Losungen";
             _losungService = DependencyService.Get<ILosungService>();
+            _losungService.ItemsChanged += (sender, args) =>
+            {
+                Items = _losungService.Items;
+                OnPropertyChanged(nameof(Items));
+            };
             Items = _losungService.Items;
             LoadItemsCommand = new Command(async () => await LoadLosungItemsAsync());
             SelectTodayCommand = new Command(() => SelectedItem = Today);
@@ -29,7 +35,7 @@ namespace Losungen.ViewModels
             //});
         }
 
-        public ReadOnlyObservableCollection<LosungItem> Items { get; }
+        public IEnumerable<LosungItem> Items { get; private set; }
 
         public Command LoadItemsCommand { get; set; }
 

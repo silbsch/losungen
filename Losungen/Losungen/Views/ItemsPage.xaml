@@ -7,6 +7,17 @@
              mc:Ignorable="d"
              x:Class="Losungen.Views.ItemsPage"
              Title="{Binding Title}">
+    <ContentPage.Resources>
+        <OnPlatform x:TypeArguments="x:String" 
+                    x:Key="FontAwesomeSolid">
+            <On Platform="Android" 
+                Value="FontAwesome5Free-Solid-900.otf#Regular" />
+            <On Platform="iOS" 
+                Value="FontAwesome5Free-Solid-900" />
+            <On Platform="UWP" 
+                Value="/Assets/FontAwesome5Free-Solid-900.otf#Font Awesome 5 Free" />
+        </OnPlatform>
+</ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Today" Command="{Binding SelectTodayCommand}"/>
@@ -46,16 +57,16 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Grid>
+        <Grid MinimumHeightRequest="80">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Text="P" Grid.Column="0" Command="{Binding PrevSundayCommand}" />
-            <Button Text="Today" Grid.Column="1" Command="{Binding SelectTodayCommand}" />
-        <Button Text="N" Grid.Column="2" Command="{Binding NextSundayCommand}" />
+            <Button Text="&#xf100;" Grid.Column="0" Command="{Binding PrevSundayCommand}" FontFamily="{StaticResource FontAwesomeSolid}"/>
+            <Button Text="&#xf102;" Grid.Column="1" Command="{Binding SelectTodayCommand}"  FontFamily="{StaticResource FontAwesomeSolid}"/>
+            <Button Text="&#xf101;" Grid.Column="2" Command="{Binding NextSundayCommand}"  FontFamily="{StaticResource FontAwesomeSolid}"/>
         </Grid>
     </StackLayout>
 </ContentPage>

@@ -1,6 +1,7 @@
 ﻿using System;
 using Losungen.ViewModels;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -43,7 +44,7 @@ namespace Losungen.Views
         {
             _isAppearing = true;
 
-            var task = _viewModel.Items.Count == 0
+            var task = !_viewModel.Items.Any()
                 ? _viewModel.LoadLosungItemsAsync()
                 : Task.CompletedTask;
 
