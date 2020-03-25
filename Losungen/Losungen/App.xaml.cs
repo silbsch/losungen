@@ -11,7 +11,7 @@ namespace Losungen
 
             DependencyService.Register<Standard.LosungService>();
 
-            MainPage = new MainPage();
+            MainPage = new NavigationPage(new ItemsPage());
         }
 
         protected override void OnStart()

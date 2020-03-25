@@ -16,13 +16,13 @@ namespace Losungen.Views
         private bool _isAppearing;
         private bool _isDisappeared;
 
-        private readonly Lazy<ItemsCards> _lazyCards;
+        private readonly Lazy<ContentPage> _lazyCards;
 
         public ItemsPage()
         {
             InitializeComponent();
             _viewModel = new MainViewModel();
-            _lazyCards = new Lazy<ItemsCards>(() => new ItemsCards(_viewModel) /*new ItemsCarouselPage { BindingContext = _viewModel };*/ );
+            _lazyCards = new Lazy<ContentPage>(() => new ItemsCards { BindingContext = _viewModel }/*new ItemsCarouselPage { BindingContext = _viewModel } */);
             BindingContext = _viewModel;
         }
 
@@ -61,13 +61,19 @@ namespace Losungen.Views
             }
         }
 
-
-
         private async void OnItemTapped(object sender, ItemTappedEventArgs args)
         {
             if (!_isDisappeared && !_isAppearing && args.Item != null)
             {
                 await Navigation.PushAsync(_lazyCards.Value);
+            }
+        }
+        
+        private void OnToolbarAboutClicked(object sender, EventArgs e)
+        {
+            if (!_isAppearing)
+            {
+                Navigation.PushAsync(new AboutPage(), true);
             }
         }
     }

@@ -25,8 +25,13 @@ namespace Losungen.Wpf.ViewModel
         public MainViewModel()
         {
             _losungen = new LosungService();
+            _losungen.ItemsChanged += OnItemsChanged;
             BindingOperations.EnableCollectionSynchronization(_losungen.Items, _lock);
+
+            Initialise();
         }
+
+        
 
         public ICommand CancellationCommand => new DelegateCommand(() =>
         {
@@ -73,7 +78,12 @@ namespace Losungen.Wpf.ViewModel
         }
 
         private ICollectionView _view;
-        public ICollectionView View => _view ?? (_view = CreateCollectionView());
+
+        public ICollectionView View
+        {
+            get => _view;
+            private set => SetProperty(ref _view, value);
+        }
 
         private string _filterText;
         public string FilterText
@@ -97,7 +107,7 @@ namespace Losungen.Wpf.ViewModel
             }
         }
 
-        public int FilteredElements => View.Cast<LosungItem>().Count();
+        public int FilteredElements => View?.Cast<LosungItem>().Count()??0;
 
         private LosungItem _selectedLosung;
 
@@ -114,13 +124,15 @@ namespace Losungen.Wpf.ViewModel
             get => _stateText;
             private set => SetProperty(ref _stateText, value);
         }
-        private ICollectionView CreateCollectionView()
+
+        private void Initialise()
         {
             Task.Run(async () =>
                 {
                     try
                     {
                         IsBusy = true;
+                        await Task.Delay(10000);
                         using (_cancellationTokenSource = new CancellationTokenSource())
                         {
                             await _losungen.InitialiseAsync(_cancellationTokenSource.Token, GetProgress());
@@ -135,10 +147,14 @@ namespace Losungen.Wpf.ViewModel
                         _cancellationTokenSource = null;
                         IsBusy = false;
                     }
+
                     SelectedLosung = _losungen.Today;
                 }
-            );
+            ).ConfigureAwait(false);
+        }
 
+        private void OnItemsChanged(object sender, EventArgs e)
+        {
             var v = CollectionViewSource.GetDefaultView(_losungen.Items);
 
             using (v.DeferRefresh())
@@ -147,8 +163,9 @@ namespace Losungen.Wpf.ViewModel
                 var sd = new SortDescription(nameof(LosungItem.Day), ListSortDirection.Ascending);
                 v.SortDescriptions.Add(sd);
             }
+
             v.MoveCurrentTo(SelectedLosung);
-            return v;
+            View = v;
         }
 
         private bool Filter(object item)

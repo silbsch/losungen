@@ -20,7 +20,11 @@
 </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Today" Command="{Binding SelectTodayCommand}"/>
+        <ToolbarItem Clicked="OnToolbarAboutClicked">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" Size="22" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
     <StackLayout>
@@ -59,13 +63,13 @@
         </ListView>
         <Grid MinimumHeightRequest="80">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <Button Text="&#xf100;" Grid.Column="0" Command="{Binding PrevSundayCommand}" FontFamily="{StaticResource FontAwesomeSolid}"/>
-            <Button Text="&#xf102;" Grid.Column="1" Command="{Binding SelectTodayCommand}"  FontFamily="{StaticResource FontAwesomeSolid}"/>
+            <Button Text="&#xf783;" Grid.Column="1" Command="{Binding SelectTodayCommand}"  FontFamily="{StaticResource FontAwesomeSolid}"/>
             <Button Text="&#xf101;" Grid.Column="2" Command="{Binding NextSundayCommand}"  FontFamily="{StaticResource FontAwesomeSolid}"/>
         </Grid>
     </StackLayout>
