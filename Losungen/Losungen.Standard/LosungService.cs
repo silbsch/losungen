@@ -32,11 +32,10 @@ namespace Losungen.Standard
         public event EventHandler ItemsChanged;
 
         private readonly ConcurrentDictionary<int, Losungen> _losungen;
-        //private readonly ObservableCollection<LosungItem> _items;
+
         public LosungService()
         {
             _losungen = new ConcurrentDictionary<int, Losungen>();
-            //_items = new ObservableCollection<LosungItem>();
             Items = Enumerable.Empty<LosungItem>();
 
         }

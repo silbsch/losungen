@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:losungen="clr-namespace:Losungen.Standard;assembly=Losungen.Standard"
+             xmlns:standard="clr-namespace:Losungen.Standard;assembly=Losungen.Standard"
              mc:Ignorable="d"
              x:Class="Losungen.Views.ItemsPage"
              Title="{Binding Title}">
@@ -41,7 +41,7 @@
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
             
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="{x:Type losungen:LosungItem}">
+                <DataTemplate x:DataType="{x:Type standard:LosungItem}">
                     <ViewCell>
                         <StackLayout Padding="10">
                             <Label Text="{Binding Day, StringFormat='{0:D}'}" 

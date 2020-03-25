@@ -11,7 +11,13 @@ namespace Losungen.ViewModels
         public bool IsBusy
         {
             get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
+            set
+            {
+                if (SetProperty(ref _isBusy, value))
+                {
+                    OnIsBusyChanged();
+                };
+            }
         }
 
         private string _title = string.Empty;
@@ -43,5 +49,7 @@ namespace Losungen.ViewModels
             changed?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        protected virtual void OnIsBusyChanged() { }
     }
 }
